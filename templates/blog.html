@@ -1,0 +1,143 @@
+{% extends 'common/base.html' %}
+{% block content %}
+    <div class="container">
+      <div class="row">
+        <!-- Latest Posts -->
+        <main class="posts-listing col-lg-8">
+          <div class="container">
+            <div class="row">
+{#                因为一排是2个，所以留2个模板的样式就行，中间做个动态循环生成就行#}
+{#            又因为一行有2个记录，所以for循环呢，按照步长为2来走0,2,4...，得保证一行有2个才行#}
+{#            如果只有一篇文章，右边第2篇显示不显示呢？即得有后一条记录才行---是可以控制的#}
+            {% for i in range(0,article_num,2) %}
+              <!-- post -->
+              <div class="post col-xl-6">
+                <div class="post-thumbnail"><a href="{{ url_for('blog.post_articles',aid=articles[i][0].aid) }}"><img src="/static/{{ articles[i][0].picture}}" alt="..." class="img-fluid"></a></div>
+                <div class="post-details">
+                  <div class="post-meta d-flex justify-content-between">
+                    <div class="date meta-last">{{ articles[i][0].create_time }}</div>
+                    <div class="category"><a href="#">{{ articles[i][1].name}}</a></div>
+                  </div><a href="{{ url_for('blog.post_articles',aid=articles[i][0].aid)}}">
+                    <h3 class="h4">{{ articles[i][0].title}}</h3></a>
+                  <p class="text-muted">{{ articles[i][0].content }}</p>
+                  <footer class="post-footer d-flex align-items-center"><a href="#" class="author d-flex align-items-center flex-wrap">
+                      <div class="avatar"><img src="/static/{{ user.portrait }}" alt="..." class="img-fluid"></div>
+                      <div class="title"><span>{{ user.username }}</span></div></a>
+                    <div class="date"><i class="icon-clock"></i> {{ articles[i][0].create_time }}</div>
+                    <div class="comments meta-last"><i class="icon-comment"></i>{{ articles[i][0].comments }}</div>
+                  </footer>
+                </div>
+              </div>
+{#   得有后一篇文章才能显示得出来呀---所以加个判断，小于文章总长度，说明还有，就可以显示,小于长度-1，那么再+1是不会越界超过文章长度的#}
+               {% if i <article_num-1 %}
+              <!-- post             -->
+              <div class="post col-xl-6">
+                <div class="post-thumbnail"><a href="{{ url_for('blog.post_articles',aid=articles[i+1][0].aid) }}"><img src="/static/{{ articles[i+1][0].picture}}" alt="..." class="img-fluid"></a></div>
+                <div class="post-details">
+                  <div class="post-meta d-flex justify-content-between">
+                    <div class="date meta-last">{{ articles[i+1][0].create_time }}</div>
+                    <div class="category"><a href="#">{{ articles[i+1][1].name }}</a></div>
+                  </div><a href="{{ url_for('blog.post_articles',aid=articles[i+1][0].aid) }}">
+                    <h3 class="h4">{{articles[i+1][0].title}}</h3></a>
+                  <p class="text-muted">{{ articles[i+1][0].content }}</p>
+                  <div class="post-footer d-flex align-items-center"><a href="#" class="author d-flex align-items-center flex-wrap">
+                      <div class="avatar"><img src="/static/{{ user.portrait }}" alt="..." class="img-fluid"></div>
+                      <div class="title"><span>{{ user.username }}</span></div></a>
+                    <div class="date"><i class="icon-clock"></i> {{ articles[i+1][0].create_time }}</div>
+                    <div class="comments meta-last"><i class="icon-comment"></i>{{ articles[i+1][0].comments}}</div>
+                  </div>
+                </div>
+              </div>
+              {% else %}
+                    <!-- post             -->
+              <div class="post col-xl-6">
+                <div class="post-thumbnail"><a href="post.html"><img src="/static/image/blog-post-2.jpg" alt="..." class="img-fluid"></a></div>
+                <div class="post-details">
+                  <div class="post-meta d-flex justify-content-between">
+                    <div class="date meta-last">待定</div>
+                    <div class="category"><a href="#">未知</a></div>
+                  </div><a href="post.html">
+                    <h3 class="h4">上新中</h3></a>
+                  <p class="text-muted">等待更新</p>
+                  <div class="post-footer d-flex align-items-center"><a href="#" class="author d-flex align-items-center flex-wrap">
+                      <div class="avatar"><img src="/static/{{ user.portrait }}" alt="..." class="img-fluid"></div>
+                      <div class="title"><span>未知</span></div></a>
+                    <div class="date"><i class="icon-clock"></i> 时间待定中</div>
+                    <div class="comments meta-last"><i class="icon-comment"></i>暂无评论</div>
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+            {% endfor %}
+            <!-- Pagination 分页-->
+            <nav aria-label="Page navigation example">
+              <ul class="pagination pagination-template d-flex justify-content-center">
+{#                <li class="page-item"><a href="#" class="page-link"> <i class="fa fa-angle-left"></i></a></li>#}
+                  {% for i in pagination.iter_pages() %}
+                    <li class="page-item"><a href="{{ url_for('blog.list_article',page=i) }}" class="page-link active">{{ i }}</a></li>
+{#                    <li class="page-item"><a href="{{ url_for('blog.page_blog',page=2) }}" class="page-link active">2</a></li>#}
+{#                    <li class="page-item"><a href="{{ url_for('blog.page_blog',page=3) }}" class="page-link active">3</a></li>#}
+{#                    <li class="page-item"><a href="{{ url_for('blog.page_blog',page=4) }}" class="page-link active">4</a></li>#}
+{#                    <li class="page-item"><a href="{{ url_for('blog.page_blog',page=5) }}" class="page-link active">5</a></li>#}
+                  {% endfor %}
+
+{#                <li class="page-item"><a href="#" class="page-link"> <i class="fa fa-angle-right"></i></a></li>#}
+              </ul>
+            </nav>
+          </div>
+        </main>
+        <aside class="col-lg-4">
+          <!-- Widget [Search Bar Widget]-->
+          <div class="widget search">
+            <header>
+              <h3 class="h6">Search the blog</h3>
+            </header>
+            <form action="#" class="search-form">
+              <div class="form-group">
+                <input type="search" placeholder="What are you looking for?">
+                <button type="submit" class="submit"><i class="icon-search"></i></button>
+              </div>
+            </form>
+          </div>
+          <!-- Widget [Latest Posts Widget]        -->
+          <div class="widget latest-posts">
+            <header>
+              <h3 class="h6">最新三篇文章</h3>
+            </header>
+            <div class="blog-posts">
+                {% for article in three_articles %}<a href="{{ url_for('blog.post_articles',aid=article.aid) }}">
+                <div class="item d-flex align-items-center">
+                  <div class="image"><img src="{{ url_for('static',filename=article.picture)}}" alt="..." class="img-fluid"></div>
+                  <div class="title"><strong>{{ article.title }}</strong>
+                    <div class="d-flex align-items-center">
+                      <div class="views"><i class="icon-eye"></i> {{ article.hits }}</div>
+                      <div class="comments"><i class="icon-comment"></i>{{ article.comments }}</div>
+                    </div>
+                  </div>
+                </div></a>
+                {% endfor %}
+          </div>
+          <!-- Widget [Categories Widget]-->
+          <div class="widget categories">
+            <header>
+              <h3 class="h6">分类</h3>
+            </header>
+              {% for category in categories %}
+            <div class="item d-flex justify-content-between"><a href="{{ url_for('blog.list_article',cid=category.cid)}}">{{ category.name }}</a><span>{{ category.num }}</span></div>
+              {% endfor %}
+          </div>
+          <!-- Widget [Tags Cloud Widget]-->
+          <div class="widget tags">
+            <header>
+              <h3 class="h6">Tags</h3>
+            </header>
+            <ul class="list-inline">
+                {% for tag in tags %}
+              <li class="list-inline-item"><a href="#" class="tag">#{{ tag.name}}</a></li>
+                {% endfor %}
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+{% endblock content %}
